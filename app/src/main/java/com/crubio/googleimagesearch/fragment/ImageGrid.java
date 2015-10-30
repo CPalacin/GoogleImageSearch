@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.crubio.googleimagesearch.R;
-import com.crubio.googleimagesearch.handler.GoogleImageHanler;
+import com.crubio.googleimagesearch.handler.GoogleImageHandler;
 import com.loopj.android.http.AsyncHttpClient;
 
 //import android.support.v7.widget.LinearLayoutManager;
@@ -17,7 +17,7 @@ import com.loopj.android.http.AsyncHttpClient;
 //import com.loopj.android.http.AsyncHttpClient;
 //import com.loopj.android.http.JsonHttpResponseHandler;
 
-
+//https://ajax.googleapis.com/ajax/services/search/images?q=plane&v=1.0&start=40&rsz=8
 public class ImageGrid extends Fragment {
     public static final String POPULAR_URL = "https://api.instagram.com/v1/media/popular?client_id=";
     public static final String CLIENT_ID = "6b6289cb87ae492d84abd9a2e3793bd6";
@@ -73,7 +73,7 @@ public class ImageGrid extends Fragment {
 //
       private void fetchPictures(String query){
           AsyncHttpClient client = new AsyncHttpClient();
-          client.get(POPULAR_URL+CLIENT_ID, null, new GoogleImageHanler(){
+          client.get(POPULAR_URL+CLIENT_ID, null, new GoogleImageHandler());
       }
 //        AsyncHttpClient client = new AsyncHttpClient();
 //            @Override
