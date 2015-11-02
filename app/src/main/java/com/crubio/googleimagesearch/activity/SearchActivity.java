@@ -3,24 +3,33 @@ package com.crubio.googleimagesearch.activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crubio.googleimagesearch.R;
 import com.crubio.googleimagesearch.fragment.ImageGrid;
 import com.crubio.googleimagesearch.fragment.SettingsDialog;
 import com.crubio.googleimagesearch.listener.OnSearchListener;
+import com.crubio.googleimagesearch.model.SearchConfiguration;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity implements SettingsDialog.OnSaveConfigurationListener, ImageGrid.OnConfigurationRequestListener {
+    public static final String CONFIGURATION = "configuration";
+
     private Toolbar toolbar;
     private OnSearchListener onSearchListener;
+    private SearchConfiguration configuration = new SearchConfiguration();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +41,7 @@ public class SearchActivity extends AppCompatActivity {
 
     private void switchToImageGrid() {
         ImageGrid imageGrid = new ImageGrid();
+        imageGrid.setOnConfigurationRequestListener(this);
         onSearchListener = imageGrid;
         switchFragment(imageGrid);
     }
@@ -67,7 +77,9 @@ public class SearchActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                if(onSearchListener != null){
+                if(!isNetworkAvailable()){
+                    Toast.makeText(SearchActivity.this, "Unable to connect to internet", Toast.LENGTH_LONG).show();
+                }else if(onSearchListener != null){
                     onSearchListener.onSearch(query);
                 }
                 return true;
@@ -79,6 +91,13 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
         return super.onCreateOptionsMenu(menu);
+    }
+
+    private Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
 
     @Override
@@ -94,8 +113,23 @@ public class SearchActivity extends AppCompatActivity {
 
     private void showSettingsDialog() {
         FragmentManager fm = getFragmentManager();
-        SettingsDialog editNameDialog = SettingsDialog.newInstance("Advance Filters");
-        editNameDialog.show(fm, "fragment_edit_name");
+        SettingsDialog settingsDialog = SettingsDialog.newInstance(configuration);
+        settingsDialog.setOnSaveConfigurationListener(this);
+        settingsDialog.show(fm, "fragment_edit_name");
     }
 
+    @Override
+    public void onSaveConfiguration(SearchConfiguration configuration) {
+        this.configuration = configuration;
+        if(isNetworkAvailable()) {
+            onSearchListener.onSearch(null);
+        }else{
+            Toast.makeText(this, "Unable to connect to internet", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public SearchConfiguration onConfigurationRequest() {
+        return configuration;
+    }
 }

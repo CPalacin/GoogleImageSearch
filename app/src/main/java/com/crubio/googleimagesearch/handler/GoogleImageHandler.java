@@ -1,7 +1,5 @@
 package com.crubio.googleimagesearch.handler;
 
-import android.preference.PreferenceActivity;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 

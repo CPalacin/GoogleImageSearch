@@ -8,5 +8,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingBottom="10dp"
+            android:background="@color/listBackground"
             android:id="@+id/rv_image_grid"/>
 </FrameLayout>
