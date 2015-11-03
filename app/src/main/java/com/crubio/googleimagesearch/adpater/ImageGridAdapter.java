@@ -2,6 +2,11 @@ package com.crubio.googleimagesearch.adpater;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +23,6 @@ import java.util.List;
 public class ImageGridAdapter extends RecyclerView.Adapter<ImageGridAdapter.ImageHolder>{
     private List<Image> images;
     private Context context;
-    private RecyclerView recyclerView;
 
     public ImageGridAdapter(List<Image> images, Context context){
         this.images = images;
@@ -44,7 +48,16 @@ public class ImageGridAdapter extends RecyclerView.Adapter<ImageGridAdapter.Imag
 
     @Override
     public void onBindViewHolder(ImageHolder holder, int position) {
-        Picasso.with(context).load(images.get(position).getTbUrl()).into(holder.imageView);
+        final Image image = images.get(position);
+
+        // Setting a placeholder drawable with the same size than the picture that will be load allows to the
+        // allows the staggeredGridLayout to reorder faster.
+        // Read your drawable from somewhere
+        Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
+        Bitmap bitmap = Bitmap.createBitmap(image.getTbWidth(), image.getTbHeight(), conf); // this creates a MUTABLE bitmap
+        Drawable d = new BitmapDrawable(context.getResources(), bitmap);
+
+        Picasso.with(context).load(image.getTbUrl()).placeholder(d).into(holder.imageView);
     }
 
     @Override

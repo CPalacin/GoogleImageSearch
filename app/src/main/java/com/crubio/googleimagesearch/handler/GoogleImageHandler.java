@@ -35,7 +35,9 @@ public class GoogleImageHandler extends JsonHttpResponseHandler {
                 String url = imageJSON.getString("url");
                 String tbUrl = imageJSON.getString("tbUrl");
                 String title = imageJSON.getString("titleNoFormatting");
-                Image image = new Image(url, tbUrl, title);
+                int tbWidth = imageJSON.getInt("tbWidth");
+                int tbHeight = imageJSON.getInt("tbHeight");
+                Image image = new Image(url, tbUrl, title, tbWidth, tbHeight);
                 images.add(image);
             }
 

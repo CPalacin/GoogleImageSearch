@@ -2,27 +2,31 @@ package com.crubio.googleimagesearch.fragment;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.crubio.googleimagesearch.R;
-import com.crubio.googleimagesearch.activity.SearchActivity;
 import com.crubio.googleimagesearch.adpater.ImageGridAdapter;
 import com.crubio.googleimagesearch.handler.GoogleImageHandler;
 import com.crubio.googleimagesearch.listener.EndlessScrollListener;
 import com.crubio.googleimagesearch.listener.OnSearchListener;
 import com.crubio.googleimagesearch.model.Image;
 import com.crubio.googleimagesearch.model.SearchConfiguration;
+import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
+import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
+import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.loopj.android.http.AsyncHttpClient;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ImageGrid extends Fragment implements OnSearchListener{
+public class ImageGrid extends Fragment implements OnSearchListener, ObservableScrollViewCallbacks {
     public static final String IMAGES_URL = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&start=[start]&rsz=8&q=[query]";
     public static final String ANY = "Any";
 
@@ -32,6 +36,10 @@ public class ImageGrid extends Fragment implements OnSearchListener{
     private int lastPage = 0;
     private EndlessScrollListener scrollListener;
     private OnConfigurationRequestListener onConfigurationRequestListener;
+    private LinearLayout toolbarContainer;
+    private ActionBar toolbar;
+    private int oldScrollY = 0;
+    private ObservableRecyclerView  rv;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -39,8 +47,11 @@ public class ImageGrid extends Fragment implements OnSearchListener{
         super.onCreateView(inflater, container, savedInstanceState);
         View rootView = inflater.inflate(R.layout.fragment_image_grid, container, false);
 
+        toolbar = ((AppCompatActivity)getActivity()).getSupportActionBar();
+
         // Retrieving the RecyclerView from the fragment layout
-        RecyclerView rv = (RecyclerView) rootView.findViewById(R.id.rv_image_grid);
+        rv = (ObservableRecyclerView) rootView.findViewById(R.id.rv_image_grid);
+
 
         // Setting a StaggeredGridLayoutManager
         StaggeredGridLayoutManager gridLayoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
@@ -53,7 +64,7 @@ public class ImageGrid extends Fragment implements OnSearchListener{
             }
         };
         rv.setOnScrollListener(scrollListener);
-
+        rv.setScrollViewCallbacks(this);
         adapter = new ImageGridAdapter(images, getActivity());
         rv.setAdapter(adapter);
 
@@ -61,11 +72,12 @@ public class ImageGrid extends Fragment implements OnSearchListener{
     }
 
     private void fetchPictures(int page, String query){
-        Log.i("fetchPictures", "page = " + page + " query: " + query + " lastPage: " + lastPage);
+
         if(query != null && lastPage < page) {
             AsyncHttpClient client = new AsyncHttpClient();
             String url = IMAGES_URL.replace("[query]", query).replace("[start]", ""+(page*8));
             url = addOptionalParameters(url);
+            Log.i("URL", url);
             client.get(url, null, new GoogleImageHandler(images, adapter));
             lastPage = page;
         }
@@ -81,7 +93,7 @@ public class ImageGrid extends Fragment implements OnSearchListener{
 
     private String addSite(String finalUrl, String site) {
         String siteUrl = finalUrl;
-        if(site != null && !ANY.equalsIgnoreCase(site)) {
+        if(site != null && !ANY.equalsIgnoreCase(site) && !"".equals(site)){
             siteUrl += "&as_sitesearch=" + site;
         }
         return siteUrl;
@@ -137,7 +149,32 @@ public class ImageGrid extends Fragment implements OnSearchListener{
         this.onConfigurationRequestListener = onConfigurationRequestListener;
     }
 
+    @Override
+    public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
+    }
+
+    @Override
+    public void onDownMotionEvent() {
+    }
+
+    @Override
+    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
+        ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
+        if (ab == null) {
+            return;
+        }
+        if (scrollState == ScrollState.UP) {
+            if (ab.isShowing()) {
+                ab.hide();
+            }
+        } else if (scrollState == ScrollState.DOWN) {
+            if (!ab.isShowing()) {
+                ab.show();
+            }
+        }
+    }
     public interface OnConfigurationRequestListener{
         SearchConfiguration onConfigurationRequest();
     }
+
 }

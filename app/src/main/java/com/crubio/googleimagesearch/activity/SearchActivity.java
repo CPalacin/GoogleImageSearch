@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,11 +32,14 @@ public class SearchActivity extends AppCompatActivity implements SettingsDialog.
     private Toolbar toolbar;
     private OnSearchListener onSearchListener;
     private SearchConfiguration configuration = new SearchConfiguration();
+    private LinearLayout toolbarContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+
         toolbarCreation();
         switchToImageGrid();
     }
@@ -56,6 +61,7 @@ public class SearchActivity extends AppCompatActivity implements SettingsDialog.
 
     private void toolbarCreation() {
         toolbar = (Toolbar) findViewById(R.id.app_bar);
+        toolbarContainer = (LinearLayout) findViewById(R.id.toolbar_container);
         setSupportActionBar(toolbar);
         setToolbarTitle(getResources().getString(R.string.app_name));
     }
