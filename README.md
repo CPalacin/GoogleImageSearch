@@ -12,7 +12,6 @@ All the required and optional task were completed. Completed user stories:
  * [x] Required: Subsequent searches will have any filters applied to the search results
  * [x] Required: User can tap on any image in results to see the image full-screen
  * [x] Required: User can scroll down “infinitely” to continue loading more image results (up to 8 pages)
- 
  * [x] Optional: Robust error handling, check if internet is available, handle error cases, network failures
  * [x] Optional: Use the ActionBar SearchView or custom layout as the query box instead of an EditText
  * [x] Optional: User can share an image to their friends or email it to themselves
