@@ -2,6 +2,7 @@ package com.crubio.googleimagesearch.handler;
 
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.crubio.googleimagesearch.model.Image;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -48,4 +49,9 @@ public class GoogleImageHandler extends JsonHttpResponseHandler {
         adapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+        super.onFailure(statusCode, headers, responseString, throwable);
+        Log.e("GoogleImageHandler", "Error response. Code: "+ statusCode);
+    }
 }
