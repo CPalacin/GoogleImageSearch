@@ -20,6 +20,6 @@ All the required and optional task were completed. Completed user stories:
  * [x] Optional: Use the StaggeredGridView to display improve the grid of image results
  * [x] Optional: User can zoom or pan images displayed in full-screen detail view.
 
-![Video Walkthrough](instaClient2.gif)
+![Video Walkthrough](search.gif)
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
